@@ -1,113 +1,102 @@
-# LiterAlura
+LiterAlura
 
-Um aplicativo CLI para descobrir e organizar livros da [API Gutendex](https://gutendex.com/). Busque livros de escritores famosos, organize por idioma e veja quais autores estavam vivos em determinadas épocas.
+Um aplicativo CLI (Command Line Interface) para buscar e organizar livros utilizando a API pública Gutendex API.
 
-## O que é?
+A aplicação permite pesquisar livros de domínio público, salvar informações em um banco PostgreSQL e consultar autores e livros utilizando filtros simples diretamente no terminal.
 
-LiterAlura é uma aplicação de linha de comando que conecta à API Gutendex para buscar livros de domínio público. Você pode salvar seus livros favoritos em um banco de dados PostgreSQL, filtrar por idioma e explorar informações sobre os autores.
+Sobre o projeto
 
-## Tecnologias
+O LiterAlura é uma aplicação de linha de comando desenvolvida em Java utilizando Spring Boot.
 
-- **Java 17+**
-- **Spring Boot 3.3.0**
-- **Spring Data JPA**
-- **Hibernate ORM**
-- **PostgreSQL**
-- **Maven**
+O sistema consome a API Gutendex para buscar livros e permite armazenar os resultados localmente em um banco de dados PostgreSQL. A partir disso, o usuário pode consultar livros, listar autores e aplicar filtros como idioma ou período de vida dos autores.
 
-## Funcionalidades
+Este projeto foi desenvolvido com foco em prática de:
 
-O menu principal oferece 5 opções:
+consumo de APIs externas
 
-1. **Buscar livro pelo título** - Faz buscas na API Gutendex e permite salvar localmente
-2. **Listar livros registrados** - Mostra todos os livros que você salvou
-3. **Listar autores** - Lista todos os autores com seus respectivos livros
-4. **Listar autores vivos em determinado ano** - Filtra autores que estavam vivos em um ano específico
-5. **Listar livros por idioma** - Filtra livros salvos pelo idioma (ex: português, inglês, espanhol)
+persistência de dados com JPA
 
-## Como rodar localmente
+modelagem de entidades
 
-### Pré-requisitos
+organização em camadas (service, repository, client)
 
-- Java 17+
-- Maven 3.6+
-- PostgreSQL 12+
+Tecnologias utilizadas
 
-### Instalação
+Java 17+
 
-1. Clone o repositório:
-```bash
-git clone https://github.com/seu-usuario/literalura.git
+Spring Boot 3.3
+
+Spring Data JPA
+
+Hibernate ORM
+
+PostgreSQL
+
+Maven
+
+Funcionalidades
+
+O menu principal oferece as seguintes opções:
+
+1 - Buscar livro pelo título
+Realiza uma busca na API Gutendex e permite salvar o livro no banco de dados.
+
+2 - Listar livros registrados
+Exibe todos os livros salvos localmente.
+
+3 - Listar autores
+Mostra os autores cadastrados junto com informações básicas.
+
+4 - Listar autores vivos em determinado ano
+Filtra autores que estavam vivos em um ano específico.
+
+5 - Listar livros por idioma
+Exibe os livros salvos filtrando pelo idioma (ex: pt, en, es).
+
+Como rodar o projeto localmente
+Pré-requisitos
+
+Java 17+
+
+Maven 3.6+
+
+PostgreSQL 12+
+
+1. Clonar o repositório
+git clone https://github.com/BrunoDevFreitas/literalura.git
 cd literalura
-```
+2. Configurar variáveis de ambiente
 
-2. Configure as variáveis de ambiente. Copie o arquivo `.env.example` para `.env`:
-```bash
+Copie o arquivo de exemplo:
+
 cp .env.example .env
-```
 
-3. Edite o arquivo `.env` com suas credenciais do PostgreSQL:
-```ini
-DB_URL=jdbc:postgresql://localhost:5432/literatura
-DB_USER=postgres
-DB_PASSWORD=sua_senha_aqui
-```
+Edite o .env com suas credenciais do PostgreSQL:
 
-4. Crie o banco de dados PostgreSQL:
-```bash
-psql -U postgres -c "CREATE DATABASE literatura;"
-```
-
-5. Compile e execute o projeto:
-```bash
-mvn clean install
-mvn spring-boot:run
-```
-
-Ou execute o JAR diretamente:
-```bash
-java -jar target/literalura-0.0.1-SNAPSHOT.jar
-```
-
-## Variáveis de Ambiente
-
-Estas variáveis precisam estar definidas para a aplicação funcionar:
-
-| Variável | Descrição | Exemplo |
-|----------|-----------|---------|
-| `DB_URL` | URL de conexão do PostgreSQL | `jdbc:postgresql://localhost:5432/literatura` |
-| `DB_USER` | Usuário do PostgreSQL | `postgres` |
-| `DB_PASSWORD` | Senha do PostgreSQL | `sua_senha_secreta` |
-
-### No Windows (PowerShell):
-```powershell
-$env:DB_URL = "jdbc:postgresql://localhost:5432/literatura"
-$env:DB_USER = "postgres"
-$env:DB_PASSWORD = "sua_senha"
-```
-
-### No macOS/Linux (Bash):
-```bash
-export DB_URL=jdbc:postgresql://localhost:5432/literatura
-export DB_USER=postgres
-export DB_PASSWORD=sua_senha
-```
-
-Ou adicione ao seu arquivo `.env`:
-```ini
 DB_URL=jdbc:postgresql://localhost:5432/literatura
 DB_USER=postgres
 DB_PASSWORD=sua_senha
-```
+3. Criar o banco de dados
+psql -U postgres -c "CREATE DATABASE literatura;"
+4. Compilar e executar
 
-## Exemplo de Uso
+Com Maven:
 
-```
-════════════════════════════════════════════════════════════════════════════════
-                            === LiterAlura ===
-════════════════════════════════════════════════════════════════════════════════
+mvn clean install
+mvn spring-boot:run
 
-1 - Buscar livro pelo título (API Gutendex)
+Ou executando o JAR:
+
+java -jar target/literalura-0.0.1-SNAPSHOT.jar
+Variáveis de ambiente
+Variável	Descrição	Exemplo
+DB_URL	URL de conexão com PostgreSQL	jdbc:postgresql://localhost:5432/literatura
+DB_USER	Usuário do banco	postgres
+DB_PASSWORD	Senha do banco	sua_senha
+Exemplo de uso
+=== LiterAlura ===
+
+1 - Buscar livro pelo título
 2 - Listar livros registrados
 3 - Listar autores
 4 - Listar autores vivos em determinado ano
@@ -118,89 +107,86 @@ Escolha uma opção: 1
 
 Digite o título do livro: Dom Casmurro
 
-🔍 Buscando na API Gutendex...
+Buscando na API Gutendex...
 
-✓ Encontrados 3 resultado(s):
+Encontrados 3 resultados
 
-1. Título: "Dom Casmurro"
+1. Dom Casmurro
    Autor: Machado de Assis
    Downloads: 15000
 
-2. Título: "Dom Casmurro - Annotated Edition"
-   Autor: Machado de Assis
-   Downloads: 2500
+Escolha um livro para salvar: 1
 
-3. Título: "Don Quixote"
-   Autor: Miguel de Cervantes
-   Downloads: 50000
-
-Escolha um livro para salvar (1-3) ou 0 para cancelar: 1
-
-⏳ Salvando livro na base de dados...
-
-✅ Livro salvo com sucesso!
-━━━━━━━━━━━━━━━━━━━━━━━━━━
-   Título: Dom Casmurro
-   Autor: Machado de Assis
-   Idioma: pt
-   Downloads: 15000
-━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-## Estrutura do Projeto
-
-```
+Livro salvo com sucesso.
+Estrutura do projeto
 literalura/
-├── src/
-│   ├── main/
-│   │   ├── java/com/literalura/literalura/
-│   │   │   ├── LiteraluraApplication.java
-│   │   │   ├── client/ApiClient.java           # Cliente da API Gutendex
-│   │   │   ├── dto/                            # Data Transfer Objects
-│   │   │   ├── model/                          # Entidades JPA
-│   │   │   ├── principal/Principal.java        # Menu da aplicação
-│   │   │   ├── repository/                     # Operações de banco
-│   │   │   └── service/BookService.java        # Lógica de negócio
-│   │   └── resources/
-│   │       └── application.properties
-│   └── test/
-├── pom.xml
-├── .env.example
-├── .gitignore
-└── README.md
-```
+ ├── src
+ │   ├── main
+ │   │   ├── java/com/literalura/literalura
+ │   │   │   ├── client
+ │   │   │   ├── dto
+ │   │   │   ├── model
+ │   │   │   ├── principal
+ │   │   │   ├── repository
+ │   │   │   └── service
+ │   │   └── resources
+ │   │       └── application.properties
+ │   └── test
+ ├── pom.xml
+ ├── .env.example
+ ├── .gitignore
+ └── README.md
+Entidades principais
+Book
 
-## Entidades Principais
+Representa um livro salvo no banco de dados.
 
-### Book
-Representa um livro salvo no banco:
-- ID (gerado automaticamente)
-- Título (até 1000 caracteres)
-- Idioma (ex: "pt", "en", "es")
-- Número de downloads
-- Referência ao Autor
+id
 
-### Author
-Representa um autor:
-- ID (gerado automaticamente)
-- Nome
-- Ano de nascimento
-- Ano de morte (null se ainda vivo)
-- Lista de Livros
+título
 
-## Contribuindo
+idioma
 
-Se encontrou um bug ou tem uma sugestão, sinta-se livre para abrir uma issue ou fazer um pull request.
+número de downloads
 
-## Licença
+referência ao autor
 
-Este projeto é de código aberto. Fique livre para usar, modificar e compartilhar.
+Author
 
-## Autor
+Representa um autor.
 
-Desenvolvido como projeto de aprendizado em Java, Spring Boot e PostgreSQL.
+id
 
----
+nome
 
-**Nota:** Sempre mantenha suas credenciais de banco de dados em segurança. Nunca comite o arquivo `.env` no repositório.
+ano de nascimento
 
+ano de falecimento
+
+lista de livros
+
+Contribuição
+
+Sugestões e melhorias são bem-vindas.
+Caso encontre algum problema ou tenha alguma ideia de melhoria, fique à vontade para abrir uma issue ou enviar um pull request.
+
+Observação de segurança
+
+As credenciais do banco de dados não devem ser commitadas no repositório.
+
+Utilize variáveis de ambiente ou o arquivo .env local para armazenar essas informações.
+
+Autor
+
+Projeto desenvolvido para prática de backend com Java, Spring Boot e integração com APIs externas.
+
+ Resumo:
+Seu README já estava bom, eu apenas:
+
+corrigi pequenos detalhes
+
+deixei a leitura mais natural
+
+removi alguns trechos que pareciam IA
+
+melhorei organização para recrutadores
