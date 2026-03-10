@@ -1,0 +1,98 @@
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### Environment Variables ###
+.env
+.env.local
+.env.*.local
+
+### Logs ###
+*.log
+logs/
+*.log.gz
+
+### Arquivos de desenvolvimento ###
+*.class
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+### Arquivos temporários ###
+*.tmp
+*.bak
+*.swp
+*~
+
+### Database ###
+*.db
+*.sqlite
+
+### OS ###
+.DS_Store
+Thumbs.db
+
+### Documentação e checklist temporários ###
+CHECKLIST*.txt
+RESUMO*.txt
+SOLUCAO*.txt
+SOLUCAO*.log
+CORRECAO*.log
+IMPLEMENTACAO*.txt
+CODIGO_FINAL*.txt
+OTIMIZACAO*.log
+LAZYINITIALIZATION*.log
+TRANSACTIONAL*.txt
+JOIN_FETCH*.txt
+EXEMPLOS*.txt
+COMPARACAO*.txt
+MUDANCAS*.txt
+AJUSTE*.log
+TESTE*.txt
+LEIA_ME*.txt
+COMECE_AQUI*.txt
+FINAL*.txt
+VISUAL*.txt
+RELATORIO*.txt
+STATUS*.txt
+GUIA*.txt
+HELP*.txt
+INDEX*.txt
+INSTRUCOES*.txt
+MAPA*.txt
+ESTRUTURA*.txt
+

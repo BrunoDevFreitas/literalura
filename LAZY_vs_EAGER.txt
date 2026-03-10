@@ -1,0 +1,222 @@
+════════════════════════════════════════════════════════════════════════════════
+        COMPARAÇÃO VISUAL - LAZY vs EAGER (ANTES vs DEPOIS)
+════════════════════════════════════════════════════════════════════════════════
+
+════════════════════════════════════════════════════════════════════════════════
+                    ARQUIVO: Book.java
+════════════════════════════════════════════════════════════════════════════════
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ❌ ANTES (FetchType.LAZY)         │ ✅ DEPOIS (FetchType.EAGER)          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                   │                                         │
+│ package com.literalura.literalura │ package com.literalura.literalura     │
+│ .model;                           │ .model;                               │
+│                                   │                                         │
+│ import jakarta.persistence.*;     │ import jakarta.persistence.*;         │
+│                                   │                                         │
+│ @Entity                           │ @Entity                               │
+│ @Table(name = "books")            │ @Table(name = "books")                │
+│ public class Book {               │ public class Book {                   │
+│                                   │                                         │
+│     @Id                           │     @Id                               │
+│     @GeneratedValue(strategy =    │     @GeneratedValue(strategy =        │
+│         GenerationType.IDENTITY)  │         GenerationType.IDENTITY)      │
+│     private Long id;              │     private Long id;                  │
+│                                   │                                         │
+│     @Column(nullable = false,     │     @Column(nullable = false,         │
+│             length = 1000)        │             length = 1000)            │
+│     private String title;         │     private String title;             │
+│                                   │                                         │
+│     @Column(nullable = false)     │     @Column(nullable = false)         │
+│     private String language;      │     private String language;          │
+│                                   │                                         │
+│     @Column(name =                │     @Column(name =                    │
+│         "download_count")         │         "download_count")             │
+│     private Integer downloadCount;│     private Integer                   │
+│                                   │         downloadCount;                │
+│                                   │                                         │
+│ ❌ @ManyToOne(fetch =             │ ✅ @ManyToOne(fetch =                 │
+│         FetchType.LAZY)           │         FetchType.EAGER)              │
+│     @JoinColumn(                  │     @JoinColumn(                      │
+│         name = "author_id",       │         name = "author_id",           │
+│         nullable = false)         │         nullable = false)             │
+│     private Author author;        │     private Author author;            │
+│                                   │                                         │
+│ ❌ LazyInitializationException    │ ✅ Sem exceção                        │
+│    ao acessar getAuthor()         │    Author sempre disponível           │
+│                                   │                                         │
+│     // ... getters/setters ...    │     // ... getters/setters ...        │
+│ }                                 │ }                                     │
+│                                   │                                         │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+════════════════════════════════════════════════════════════════════════════════
+                    FLUXO DE EXECUÇÃO: ANTES vs DEPOIS
+════════════════════════════════════════════════════════════════════════════════
+
+❌ COM LAZY (PROBLEMA):
+
+  1. Hibernator busca: SELECT * FROM books WHERE id = 1
+     └─ Retorna: Book(id=1, title="...", author_id=5)
+     └─ author fica como PROXY não inicializado
+
+  2. Sessão do Hibernate é fechada
+     └─ Conectando com banco é encerrado
+     └─ Pool de conexões liberado
+
+  3. Code tenta: book.getAuthor().getName()
+     └─ Lazy proxy tenta carregar
+     └─ NÃO há sessão ativa!
+     └─ ❌ LazyInitializationException!
+
+  4. Stack Trace:
+     org.hibernate.LazyInitializationException:
+       could not initialize proxy - no Session
+
+
+✅ COM EAGER (SOLUÇÃO):
+
+  1. Hibernate busca:
+     SELECT b.*, a.* FROM books b
+     JOIN authors a ON b.author_id = a.id
+     WHERE b.id = 1
+     └─ Retorna: Book(id=1, title="...", author=Author(...))
+     └─ author já está carregado!
+
+  2. Sessão do Hibernate é fechada
+     └─ Está tudo bem!
+     └─ Author já está em memória
+
+  3. Code tenta: book.getAuthor().getName()
+     └─ Author já está carregado
+     └─ Retorna valor da memória
+     └─ ✅ SEM EXCEÇÃO!
+
+  4. Resultado:
+     "Machado de Assis"
+
+
+════════════════════════════════════════════════════════════════════════════════
+                    DIFERENÇA NAS QUERIES SQL
+════════════════════════════════════════════════════════════════════════════════
+
+LAZY - PRIMEIRA BUSCA:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Query 1:                                                                    │
+│ SELECT                                                                      │
+│   b.id, b.title, b.language, b.download_count, b.author_id                │
+│ FROM books b                                                                │
+│ WHERE b.id = 1;                                                             │
+│                                                                             │
+│ Resultado: Só livro, sem dados do author                                   │
+│                                                                             │
+│ Query 2 (quando acessa getAuthor() - se sessão ativa):                     │
+│ SELECT                                                                      │
+│   a.id, a.name, a.birth_year, a.death_year                                │
+│ FROM authors a                                                              │
+│ WHERE a.id = 5;                                                             │
+│                                                                             │
+│ Resultado: Dados do author                                                 │
+│                                                                             │
+│ ❌ Problema: Query 2 falha se sessão foi fechada!                          │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+EAGER - UMA ÚNICA BUSCA:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Query 1:                                                                    │
+│ SELECT                                                                      │
+│   b.id, b.title, b.language, b.download_count, b.author_id,              │
+│   a.id, a.name, a.birth_year, a.death_year                                │
+│ FROM books b                                                                │
+│ JOIN authors a ON b.author_id = a.id                                      │
+│ WHERE b.id = 1;                                                             │
+│                                                                             │
+│ Resultado: Livro + Author em uma única query                              │
+│                                                                             │
+│ ✅ Nenhuma segunda query necessária!                                       │
+│ ✅ Author sempre disponível!                                               │
+│ ✅ Sem LazyInitializationException!                                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+════════════════════════════════════════════════════════════════════════════════
+                    CÓDIGO DE TESTE - ANTES vs DEPOIS
+════════════════════════════════════════════════════════════════════════════════
+
+❌ TESTE COM LAZY (vai dar erro):
+
+  public void listarLivros() {
+      List<Book> books = bookRepository.findAll();  // Busca books
+
+      // Sessão fecha aqui (após findAll())
+
+      for (Book book : books) {
+          // ❌ LazyInitializationException aqui!
+          System.out.println(book.getAuthor().getName());
+      }
+  }
+
+✅ TESTE COM EAGER (funciona perfeitamente):
+
+  public void listarLivros() {
+      List<Book> books = bookRepository.findAll();  // Busca books + authors
+
+      // Sessão fecha aqui (mas author já está carregado)
+
+      for (Book book : books) {
+          // ✅ Funciona! Author já está em memória
+          System.out.println(book.getAuthor().getName());
+      }
+  }
+
+
+════════════════════════════════════════════════════════════════════════════════
+                    POSSÍVEIS CASOS DE USO
+════════════════════════════════════════════════════════════════════════════════
+
+Cenário 1: Listar todos os livros com autor
+  Code:
+    List<Book> books = bookService.getAllBooks();
+    books.forEach(book -> {
+        System.out.println(book.getTitle() + " por " +
+                         book.getAuthor().getName());  // ✅ OK com EAGER
+    });
+
+Cenário 2: Buscar livro por ID e exibir
+  Code:
+    Book book = bookRepository.findById(1L).orElse(null);
+    System.out.println(book.getAuthor().getName());  // ✅ OK com EAGER
+
+Cenário 3: Filtrar livros por autor
+  Code:
+    List<Book> books = bookRepository.findByLanguage("pt");
+    books.forEach(book -> {
+        if (book.getAuthor().getName().startsWith("M")) {
+            // ✅ OK com EAGER
+        }
+    });
+
+Cenário 4: Salvar livro
+  Code:
+    Book book = new Book("...", "pt", 5000, author);
+    bookRepository.save(book);  // ✅ Funciona igual
+
+
+════════════════════════════════════════════════════════════════════════════════
+                    RESUMO - ANTES vs DEPOIS
+════════════════════════════════════════════════════════════════════════════════
+
+ASPECTO              LAZY (❌)              EAGER (✅)
+─────────────────────────────────────────────────────────────────────────────
+Carregamento         Preguiçoso             Automático
+Sessão               Necessária             Não necessária
+Exception            LazyInitialization     Nenhuma
+Queries              2 ou mais              1 (com JOIN)
+Performance          Mais rápido             Um pouco mais lento
+Uso em App CLI       Problemático           Ideal
+
+
+════════════════════════════════════════════════════════════════════════════════
+

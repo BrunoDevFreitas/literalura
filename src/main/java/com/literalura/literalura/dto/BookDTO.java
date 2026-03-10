@@ -1,0 +1,54 @@
+package com.literalura.literalura.dto;
+
+import java.util.List;
+
+public class BookDTO {
+
+    private String title;
+    private List<AuthorDTO> authors;
+    private List<String> languages;
+    private int download_count;
+
+    // Constructors
+    public BookDTO() {}
+
+    public BookDTO(String title, List<AuthorDTO> authors, List<String> languages, int download_count) {
+        this.title = title;
+        this.authors = authors;
+        this.languages = languages;
+        this.download_count = download_count;
+    }
+
+    // Getters and Setters
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public List<AuthorDTO> getAuthors() {
+        return authors;
+    }
+
+    public void setAuthors(List<AuthorDTO> authors) {
+        this.authors = authors;
+    }
+
+    public List<String> getLanguages() {
+        return languages;
+    }
+
+    public void setLanguages(List<String> languages) {
+        this.languages = languages;
+    }
+
+    public int getDownload_count() {
+        return download_count;
+    }
+
+    public void setDownload_count(int download_count) {
+        this.download_count = download_count;
+    }
+}
